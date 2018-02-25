@@ -132,7 +132,7 @@ func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse
 }
 
 func getCommandKeywords(commandLine string, trigger string) string {
-	return strings.Replace(commandLine, "/"+trigger, "", 1)
+	return strings.Trim(strings.Replace(commandLine, "/"+trigger, "", 1), " ")
 }
 
 func appError(message string, err error) *model.AppError {
