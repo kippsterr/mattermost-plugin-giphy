@@ -26,6 +26,7 @@ type GiphyPlugin struct {
 	enabled       bool
 }
 
+// GiphyPluginConfiguration contains Mattermost GiphyPlugin configuration settings
 type GiphyPluginConfiguration struct {
 	Rating    string
 	Language  string
@@ -68,6 +69,7 @@ func (p *GiphyPlugin) config() *GiphyPluginConfiguration {
 	return p.configuration.Load().(*GiphyPluginConfiguration)
 }
 
+// OnConfigurationChange handles plugin configuration changes
 func (p *GiphyPlugin) OnConfigurationChange() error {
 	var configuration GiphyPluginConfiguration
 	err := p.api.LoadPluginConfiguration(&configuration)
@@ -111,7 +113,7 @@ func (p *GiphyPlugin) executeCommandGif(command string) (*model.CommandResponse,
 	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL, Text: text}, nil
 }
 
-// executeCommandGif returns a private post containing a list of matching GIFs
+// executeCommandGifs returns a private post containing a list of matching GIFs
 func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse, *model.AppError) {
 	keywords := getCommandKeywords(command, triggerGifs)
 	gifURLs, err := p.gifProvider.getMultipleGifsURL(p.config(), keywords)
