@@ -1,7 +1,7 @@
-id: com.github.moussetc.mattermost.plugin.giphy
+id: com.github.kippsterr.mattermost.plugin.giphy
 name: Giphy
 description: Add Giphy features to Mattermost
-version: '0.1.0'
+version: '0.2.1'
 backend:
     executable: plugin.exe
 settings_schema:
@@ -15,6 +15,15 @@ settings_schema:
           type: text
           display_name: GIF Rating
           help_text: Choose the MPAA-style rating (y, g, pg, pg-13, r...) used to filter results or leave empty for no rating filtering.
+        - key: ResponseTemplate
+          type: text
+          display_name: Response Formatting
+          help_text: |
+            Configure the format of the message that is posted by the user that requested the gif. Variables -
+              * ##KEYWORDS##
+              * ##GIR_URL##
+              * ##VIA_GIPHY##
+          default: " *[##KEYWORDS##](##GIF_URL##)*\n![GIF for '##KEYWORDS##'](##GIF_URL##)"
         - key: Rendition
           type: dropdown
           display_name: Rendition style

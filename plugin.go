@@ -28,10 +28,11 @@ type GiphyPlugin struct {
 
 // GiphyPluginConfiguration contains Mattermost GiphyPlugin configuration settings
 type GiphyPluginConfiguration struct {
-	Rating    string
-	Language  string
-	Rendition string
-	APIKey    string
+	Rating           string
+	Language         string
+	Rendition        string
+	ResponseTemplate string
+	APIKey           string
 }
 
 // OnActivate register the plugin commands
@@ -104,12 +105,13 @@ func (p *GiphyPlugin) ExecuteCommand(args *model.CommandArgs) (*model.CommandRes
 // executeCommandGif returns a public post containing a matching GIF
 func (p *GiphyPlugin) executeCommandGif(command string) (*model.CommandResponse, *model.AppError) {
 	keywords := getCommandKeywords(command, triggerGif)
-	gifURL, err := p.gifProvider.getGifURL(p.config(), keywords)
+	config := p.config()
+	gifURL, err := p.gifProvider.getGifURL(config, keywords)
 	if err != nil {
 		return nil, appError("Unable to get GIF URL", err)
 	}
 
-	text := " *[" + keywords + "](" + gifURL + ")*\n" + "![GIF for '" + keywords + "'](" + gifURL + ")"
+	text := applyResponseTemplate(config.ResponseTemplate, keywords, gifURL)
 	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL, Text: text}, nil
 }
 
@@ -133,6 +135,13 @@ func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse
 
 func getCommandKeywords(commandLine string, trigger string) string {
 	return strings.Trim(strings.Replace(commandLine, "/"+trigger, "", 1), " ")
+}
+
+func applyResponseTemplate(template, keywords, gifURL string) string {
+	r := strings.NewReplacer("##KEYWORDS##", keywords,
+		"##GIF_URL##", gifURL,
+		"##VIA_GIPHY##", "via ![giphy](https://giphy.com/static/img/favicon.png)")
+	return r.Replace(template)
 }
 
 func appError(message string, err error) *model.AppError {
