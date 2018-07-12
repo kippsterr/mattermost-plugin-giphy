@@ -14,7 +14,7 @@ import (
 const (
 	// Triggers used to define slash commands
 	triggerGif  = "gif"
-	triggerGifs = "gifs"
+	triggerGifs = "zchristophtestet"
 )
 
 // GiphyPlugin is a Mattermost plugin that adds a /gif slash command
@@ -39,19 +39,19 @@ type GiphyPluginConfiguration struct {
 func (p *GiphyPlugin) OnActivate(api plugin.API) error {
 	p.api = api
 	p.enabled = true
-	err := api.RegisterCommand(&model.Command{
-		Trigger:          triggerGif,
-		Description:      "Posts a Giphy GIF that matches the keyword(s)",
-		DisplayName:      "Giphy command",
-		AutoComplete:     true,
-		AutoCompleteDesc: "Posts a Giphy GIF that matches the keyword(s)",
-		AutoCompleteHint: "happy kitty",
-	})
-	if err != nil {
-		return err
-	}
+	// err := api.RegisterCommand(&model.Command{
+	// 	Trigger:          triggerGif,
+	// 	Description:      "Posts a Giphy GIF that matches the keyword(s)",
+	// 	DisplayName:      "Giphy command",
+	// 	AutoComplete:     true,
+	// 	AutoCompleteDesc: "Posts a Giphy GIF that matches the keyword(s)",
+	// 	AutoCompleteHint: "happy kitty",
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = api.RegisterCommand(&model.Command{
+	err := api.RegisterCommand(&model.Command{
 		Trigger:          triggerGifs,
 		Description:      "Shows a preview of 10 GIFS matching the keyword(s)",
 		DisplayName:      "Giphy preview command",
@@ -95,9 +95,9 @@ func (p *GiphyPlugin) ExecuteCommand(args *model.CommandArgs) (*model.CommandRes
 	if strings.HasPrefix(args.Command, "/"+triggerGifs) {
 		return p.executeCommandGifs(args.Command)
 	}
-	if strings.HasPrefix(args.Command, "/"+triggerGif) {
-		return p.executeCommandGif(args.Command)
-	}
+	// if strings.HasPrefix(args.Command, "/"+triggerGif) {
+	// 	return p.executeCommandGif(args.Command)
+	// }
 
 	return nil, appError("Command trigger "+args.Command+"is not supported by this plugin.", nil)
 }
@@ -115,6 +115,22 @@ func (p *GiphyPlugin) executeCommandGif(command string) (*model.CommandResponse,
 	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL, Text: text}, nil
 }
 
+func createGIFPreviewItem(gifURL string) *model.SlackAttachment {
+	attachment := new(model.SlackAttachment)
+	attachment.ThumbURL = gifURL
+
+	postAction := new(model.PostAction)
+	postAction.Name = "GIF search result preview"
+	postAction.Integration = new(model.PostActionIntegration)
+	postAction.Integration.URL = "/some-url/232464/id"
+	postAction.Integration.Context = make(model.StringInterface)
+	postAction.Integration.Context["gifID"] = "154351243612436123"
+
+	attachment.Actions = append(attachment.Actions, postAction)
+
+	return attachment
+}
+
 // executeCommandGifs returns a private post containing a list of matching GIFs
 func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse, *model.AppError) {
 	keywords := getCommandKeywords(command, triggerGifs)
@@ -123,14 +139,17 @@ func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse
 		return nil, appError("Unable to get GIF URL", err)
 	}
 
-	text := fmt.Sprintf(" *Suggestions for '%s':*", keywords)
-	for i, url := range gifURLs {
-		if i > 0 {
-			text += "\t"
-		}
-		text += fmt.Sprintf("[![GIF for '%s'](%s)](%s)", keywords, url, url)
+	var attachments []*model.SlackAttachment
+	text := fmt.Sprintf("Suggestions for '%s' via ![giphy](https://giphy.com/static/img/favicon.png)", keywords)
+	for _, url := range gifURLs {
+		// if i > 0 {
+		// 	text += "\t"
+		// }
+		// text += fmt.Sprintf("[![GIF for '%s'](%s)](%s)", keywords, url, url)
+		attachments = append(attachments, createGIFPreviewItem(url))
 	}
-	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL, Text: text}, nil
+
+	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL, Text: text, Attachments: attachments}, nil
 }
 
 func getCommandKeywords(commandLine string, trigger string) string {

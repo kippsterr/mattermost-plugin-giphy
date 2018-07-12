@@ -1,7 +1,7 @@
-id: com.github.kippsterr.mattermost.plugin.giphy
-name: Giphy
+id: com.github.kippsterr.mattermost.plugin.giphy-multi
+name: Multi Giphy
 description: Add Giphy features to Mattermost
-version: '0.2.1'
+version: '0.2.7'
 backend:
     executable: plugin.exe
 settings_schema:

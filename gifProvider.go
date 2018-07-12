@@ -60,7 +60,7 @@ func (p *giphyProvider) getMultipleGifsURL(config *GiphyPluginConfiguration, req
 		return nil, err
 	}
 	urls := make([]string, len(response.Data))
-	for _, data := range response.Data {
+	for i, data := range response.Data {
 		data := giphyData{
 			FixedHeight:            gif{URL: data.Images.Fixed_height.Url},
 			FixedHeightStill:       gif{URL: data.Images.Fixed_height_still.Url},
@@ -78,7 +78,7 @@ func (p *giphyProvider) getMultipleGifsURL(config *GiphyPluginConfiguration, req
 			Original:               gif{URL: data.Images.Original.Url},
 			OriginalStill:          gif{URL: data.Images.Original_still.Url},
 		}
-		urls = append(urls, p.getGifForRendition(config.Rendition, &data).URL)
+		urls[i] = p.getGifForRendition("fixed_height_small", &data).URL
 	}
 	return urls, nil
 }
