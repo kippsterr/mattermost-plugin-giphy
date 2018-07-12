@@ -42,7 +42,6 @@ func TestExecuteCommandToReturnCommandResponse(t *testing.T) {
 
 	command := model.CommandArgs{
 		Command: "/gif cute doggo",
-		UserId:  "userid",
 	}
 
 	response, err := p.ExecuteCommand(&command)

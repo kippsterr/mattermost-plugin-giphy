@@ -23,7 +23,7 @@ settings_schema:
               * ##KEYWORDS##
               * ##GIR_URL##
               * ##VIA_GIPHY##
-          default: " *[##KEYWORDS##](##GIF_URL##)*\n![GIF for '##KEYWORDS##'](##GIF_URL##)"
+          default: "*##KEYWORDS##* ##VIA_GIPHY## - ##GIF_URL##"
         - key: Rendition
           type: dropdown
           display_name: Rendition style

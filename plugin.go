@@ -15,6 +15,8 @@ const (
 	// Triggers used to define slash commands
 	triggerGif  = "gif"
 	triggerGifs = "gifs"
+
+	responseTemplateDefault = "*##KEYWORDS##* ##VIA_GIPHY## - ##GIF_URL##"
 )
 
 // GiphyPlugin is a Mattermost plugin that adds a /gif slash command
@@ -111,7 +113,7 @@ func (p *GiphyPlugin) executeCommandGif(command string) (*model.CommandResponse,
 		return nil, appError("Unable to get GIF URL", err)
 	}
 
-	text := applyResponseTemplate(config.ResponseTemplate, keywords, gifURL)
+	text := applyResponseTemplate(getResponseTemplate(config.ResponseTemplate), keywords, gifURL)
 	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_IN_CHANNEL, Text: text}, nil
 }
 
@@ -131,6 +133,13 @@ func (p *GiphyPlugin) executeCommandGifs(command string) (*model.CommandResponse
 		text += fmt.Sprintf("[![GIF for '%s'](%s)](%s)", keywords, url, url)
 	}
 	return &model.CommandResponse{ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL, Text: text}, nil
+}
+
+func getResponseTemplate(responseTemplateFromConfig string) string {
+	if responseTemplateFromConfig == "" {
+		return responseTemplateDefault
+	}
+	return responseTemplateFromConfig
 }
 
 func getCommandKeywords(commandLine string, trigger string) string {
