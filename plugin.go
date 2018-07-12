@@ -13,8 +13,8 @@ import (
 
 const (
 	// Triggers used to define slash commands
-	triggerGif  = "gif"
-	triggerGifs = "gifs"
+	triggerGif = "gif"
+	// triggerGifs = "gifs"
 
 	responseTemplateDefault = "*##KEYWORDS##* ##VIA_GIPHY## - ##GIF_URL##"
 )
@@ -53,17 +53,17 @@ func (p *GiphyPlugin) OnActivate(api plugin.API) error {
 		return err
 	}
 
-	err = api.RegisterCommand(&model.Command{
-		Trigger:          triggerGifs,
-		Description:      "Shows a preview of 10 GIFS matching the keyword(s)",
-		DisplayName:      "Giphy preview command",
-		AutoComplete:     true,
-		AutoCompleteDesc: "Shows a preview of 10 GIFS matching the keyword(s)",
-		AutoCompleteHint: "happy kitty",
-	})
-	if err != nil {
-		return err
-	}
+	// err = api.RegisterCommand(&model.Command{
+	// 	Trigger:          triggerGifs,
+	// 	Description:      "Shows a preview of 10 GIFS matching the keyword(s)",
+	// 	DisplayName:      "Giphy preview command",
+	// 	AutoComplete:     true,
+	// 	AutoCompleteDesc: "Shows a preview of 10 GIFS matching the keyword(s)",
+	// 	AutoCompleteHint: "happy kitty",
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
 	return p.OnConfigurationChange()
 }
